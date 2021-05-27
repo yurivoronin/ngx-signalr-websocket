@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ngx-signalr-websocket": {
+      "projectType": "library",
+      "root": "projects/ngx-signalr-websocket",
+      "sourceRoot": "projects/ngx-signalr-websocket/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-signalr-websocket/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-signalr-websocket/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-signalr-websocket/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-signalr-websocket/src/test.ts",
+            "tsConfig": "projects/ngx-signalr-websocket/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-signalr-websocket/karma.conf.js"
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "ngx-signalr-websocket"
+}
