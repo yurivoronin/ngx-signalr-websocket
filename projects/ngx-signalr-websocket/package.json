@@ -1,6 +1,6 @@
 {
   "name": "ngx-signalr-websocket",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A lightweight ASP.NET SignalR client for Angular",
   "license": "MIT",
   "keywords": [
@@ -14,7 +14,7 @@
     "type": "git",
     "url": "git+https://github.com/yurivoronin/ngx-signalr-websocket.git"
   },
-  "homepage": "https://github.com/yurivoronin/ngx-signalr-websocket#readme",
+  "homepage": "https://github.com/yurivoronin/ngx-signalr-websocket/tree/main/projects/ngx-signalr-websocket#readme",
   "author": {
     "name": "Yuri Voronin"
   },
