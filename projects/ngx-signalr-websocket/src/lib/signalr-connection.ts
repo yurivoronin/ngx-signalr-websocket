@@ -1,5 +1,5 @@
 import { Observable, Subscription } from 'rxjs';
-import { catchError, delay, filter, first, map, mergeAll, retry, retryWhen, tap } from 'rxjs/operators';
+import { delay, filter, first, map, mergeAll, retryWhen, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
@@ -89,19 +89,13 @@ export class SignalrConnection {
   invoke<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
     const invocationId = this.nextInvocationId();
 
-    console.log('invoke', invocationId, method, args);
-
     (this.subject as WebSocketSubject<IInvocationMessage[]>).next([createInvocationMessage(method, args, invocationId)]);
-
-    console.log('invoke sent', invocationId);
 
     return (this.subject as WebSocketSubject<ICompletionMessage[]>)
       .pipe(
-        tap(x => console.log('test', x)),
         mergeAll(),
         filter(x => x.invocationId === invocationId),
         first(),
-        tap(message => console.log('message', message)),
         map(message => this.mapCompletionMessage(message),
           retryWhen(errors => errors.pipe(
             tap(error => console.error(`SignalR WebSocket invoke error: ${error}`)),

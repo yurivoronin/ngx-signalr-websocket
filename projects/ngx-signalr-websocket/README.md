@@ -130,7 +130,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { filter, switchMap, withLatestFrom, map } from 'rxjs/operators';
-import { SignalrClient, SignalrConnection } from 'ngx-signalr-werbsocket';
+import { SignalrClient, SignalrConnection } from 'ngx-signalr-websocket';
 import * as fromRoot from '@app/store/reducers';
 
 ...
