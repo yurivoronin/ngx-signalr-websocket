@@ -1,5 +1,5 @@
 import { Observable, Subscription } from 'rxjs';
-import { delay, filter, first, map, mergeAll, retryWhen, tap } from 'rxjs/operators';
+import { filter, first, map, mergeAll, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
@@ -72,9 +72,14 @@ export class SignalrConnection {
     return stream.pipe(
       mergeAll(),
       filter(x => x.invocationId === invocationId),
-      map(message => message.type === MessageType.completion
-        ? this.mapCompletionMessage(message as ICompletionMessage)
-        : (message as IStreamItemMessage).item as TItem)
+      tap(message => {
+        if (message.type === MessageType.completion) {
+          const { error } = message as ICompletionMessage;
+          if (error) { throw Error(error); }
+        }
+      }),
+      takeWhile(message => message.type !== MessageType.completion),
+      map(message => (message as IStreamItemMessage).item as TItem)
     );
   }
 
@@ -96,12 +101,11 @@ export class SignalrConnection {
         mergeAll(),
         filter(x => x.invocationId === invocationId),
         first(),
-        map(message => this.mapCompletionMessage(message),
-          retryWhen(errors => errors.pipe(
-            tap(error => console.error(`SignalR WebSocket invoke error: ${error}`)),
-            delay(5000)
-          )))
-      );
+        map(message => {
+          const { error, result } = message as ICompletionMessage;
+          if (error) { throw Error(error); }
+          return result as TItem;
+        }));
   }
 
   /**
@@ -140,13 +144,5 @@ export class SignalrConnection {
   private nextInvocationId(): string {
     this.lastInvocationId++;
     return this.lastInvocationId.toString();
-  }
-
-  private mapCompletionMessage<TItem>(message: ICompletionMessage): TItem {
-    const { error, result } = message as ICompletionMessage;
-
-    if (error) { throw Error(error); }
-
-    return result as TItem;
   }
 }

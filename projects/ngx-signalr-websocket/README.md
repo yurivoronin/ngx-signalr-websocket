@@ -103,14 +103,12 @@ To end the stream from the client, call the `unsubscribe()` method on the ISubsc
 
 ## Configuration
 
-With the default configuration, the client converts string dates to the Date type. The connection retry time is also set to 5 seconds.
+With the default configuration, the client converts string dates to the Date type.
 
 If you want to override the configuration, you can use the constructor parameter:
 
 ```typescript
 SignalrClient.create(url, configuration => {
-  confgiuration.retryDelay = 10_000; // Set retry delay to 10 seconds.
-
   confgiuration.propertyParsers = [parseIsoDateStrToDate]; // This is default value.
 })
 ```
@@ -150,7 +148,12 @@ export class AppSignalrService implements OnDestroy {
     this.client = SignalrClient.create(httpClient);
 
     store.select(fromRoot.selectSignalrHubUri)
-      .pipe(switchMap(uri => this.client.connect(uri)))
+      .pipe(
+        switchMap(uri => this.client.connect(uri)),
+        retryWhen(errors => errors.pipe(
+          tap(error => console.error(`SignalR connection error: ${error}`)),
+          delay(5000)
+        )))
       .subscribe(connection => {
         this.disconnect();
         this.connection$.next(connection);

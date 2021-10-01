@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { delay, map, retryWhen, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import { INegotiateResponse, Transport, TransferFormat } from './negotiate';
 import { IHubMessage, IHandshakeRequest } from './protocol';
@@ -9,7 +9,6 @@ import { ISignalrClientOptions } from './signalr-client-options';
 import { SignalrConnection } from './signalr-connection';
 
 const defaultOptions: ISignalrClientOptions = {
-  retryDelay: 5000,
   propertyParsers: [parseIsoDateStrToDate]
 };
 
@@ -56,13 +55,7 @@ export class SignalrClient {
    */
   connect(hubUrl: string, accessToken?: string): Observable<SignalrConnection> {
     return this.negotiate(hubUrl)
-      .pipe(
-        map(connectionId => this.createConnection(hubUrl, connectionId, accessToken)),
-        retryWhen(errors => errors.pipe(
-          tap(error => console.error(`SignalR WebSocket error: ${error}`)),
-          delay(this.options.retryDelay)
-        ))
-      );
+      .pipe(map(connectionId => this.createConnection(hubUrl, connectionId, accessToken)));
   }
 
   private negotiate(endpointBase: string): Observable<string> {
@@ -75,11 +68,7 @@ export class SignalrClient {
           }
 
           return response.connectionId;
-        }),
-        retryWhen(errors => errors.pipe(
-          tap(error => console.error(`SignalR negotiate error: ${error}`)),
-          delay(this.options.retryDelay)
-        ))
+        })
       );
   }
 
