@@ -3,23 +3,23 @@ import { filter, first, map, mergeAll, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
-  createCancelInvocationMessage,
-  createStreamInvocationMessage,
-  createInvocationMessage,
   closeMessage,
+  createCancelInvocationMessage,
+  createInvocationMessage,
+  createStreamInvocationMessage,
   handshakeRequest,
-  pingMessage,
   ICompletionMessage,
   IHandshakeRequest,
+  IHubInvocationMessage,
   IHubMessage,
   IInvocationMessage,
+  IMessageHeaders,
   IPingMessage,
   IStreamItemMessage,
-  MessageType,
-  IHubInvocationMessage,
+  pingMessage
 } from './protocol';
 import { IMessageSerializer } from './serialization';
-import { IMessageHeaders } from '../../../../dist/ngx-signalr-websocket/lib/protocol';
+import { MessageType } from './protocol';
 
 /**
  * Represents a connection to a SignalR Hub.
