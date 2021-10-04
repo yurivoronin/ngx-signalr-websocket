@@ -12,10 +12,14 @@ After building your library with `ng build ngx-signalr-websocket`, go to the dis
 
 ## Running tests
 
-Run `npm run mock:build` to first build mock SignalR hub docker image named 'signalr-example'
-Run `npm run mock:run` to start mock SignalR hub docker container 'signalr-example'
+Run `npm run mock:build` to first build mock SignalR hub docker image named 'signalr-example'.
+
+Run `npm run mock:run` to create and start mock SignalR hub docker container 'signalr-example'.
+
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-When tests finished run `npm run mock:stop` to stop mock SignalR hub docker container 'signalr-example'
+When tests finished run `npm run mock:stop` to stop mock SignalR hub docker container 'signalr-example'.
+
+To rerun mock container use `npm run mock:start`.
 
 In case of rebuild or remove 'signalr-example' run `npm run mock:clear` to remove both container and image.

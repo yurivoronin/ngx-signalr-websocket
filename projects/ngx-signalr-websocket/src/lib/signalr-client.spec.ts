@@ -1,6 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 import { SignalrClient } from './signalr-client';
 
@@ -21,9 +21,12 @@ describe('BackofficeBaseService', () => {
   it('call invoke returns response', (done) => {
 
     client.connect(signalrHubUri)
-      .pipe(switchMap(connection => connection.invoke<number>('Add', 5, 20)))
-      .subscribe(sum => {
+      .pipe(switchMap(connection => connection.invoke<number>('Add', 5, 20)
+        .pipe(map(sum => ({ connection, sum })))))
+      .subscribe(({ connection, sum }) => {
         expect(sum).toBe(25);
+
+        connection.close();
 
         done();
       });
@@ -35,19 +38,18 @@ describe('BackofficeBaseService', () => {
       .pipe(switchMap(connection => {
         const onReceive = connection.on<[number]>('Receive');
         connection.send('Repeat', 42);
-        return onReceive;
+        return onReceive.pipe(map(values => ({ connection, values })));
       }))
-      .subscribe(values => {
+      .subscribe(({ connection, values }) => {
         expect(values).toBeTruthy();
         expect(values.length).toBe(1);
         expect(values[0]).toBe(42);
 
-        done();
-
         subscription.unsubscribe();
+        connection.close();
+
+        done();
       });
-
-
   });
 
   it('call stream returns all responses', (done) => {
@@ -55,8 +57,9 @@ describe('BackofficeBaseService', () => {
     let count = 0;
 
     const subscription = client.connect(signalrHubUri)
-      .pipe(switchMap(connection => connection.stream<number>('Enumerate', 5, 50)))
-      .subscribe(index => {
+      .pipe(switchMap(connection => connection.stream<number>('Enumerate', 5, 50)
+        .pipe(map(index => ({ connection, index })))))
+      .subscribe(({ connection, index }) => {
         count++;
 
         expect(count).toBeLessThanOrEqual(5);
@@ -66,11 +69,32 @@ describe('BackofficeBaseService', () => {
         if (count === 5) {
           setTimeout(() => {
             expect(subscription.closed).toBe(true);
-            done();
 
             subscription.unsubscribe();
+            connection.close();
+
+            done();
           }, 1e3);
         }
+      });
+  });
+
+  it('call invoke with headers correctly', (done) => {
+
+    const client = new SignalrClient(httpClient, {
+      headersFactory: () => ({
+        "X-Header": "Test"
+      })
+    });
+
+    client.connect(signalrHubUri)
+      .pipe(switchMap(connection => connection.invoke<number>('Add', 0, 0)
+        .pipe(map(sum => ({ connection, sum })))))
+      .subscribe(({ connection, sum }) => {
+        expect(sum).toBe(0);
+
+        connection.close();
+        done();
       });
   });
 });

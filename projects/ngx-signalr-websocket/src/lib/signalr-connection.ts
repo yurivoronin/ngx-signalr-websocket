@@ -19,6 +19,7 @@ import {
   IHubInvocationMessage,
 } from './protocol';
 import { IMessageSerializer } from './serialization';
+import { IMessageHeaders } from '../../../../dist/ngx-signalr-websocket/lib/protocol';
 
 /**
  * Represents a connection to a SignalR Hub.
@@ -36,7 +37,10 @@ export class SignalrConnection {
    * @param url Connection URL.
    * @param serializer Messages serializer.
    */
-  constructor(url: string, private serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>) {
+  constructor(
+    url: string,
+    private serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>,
+    private headersFactory?: (method: string, args: unknown[]) => IMessageHeaders) {
 
     this.subject = webSocket<(IHubMessage | IHandshakeRequest)[]>({
       url,
@@ -64,8 +68,8 @@ export class SignalrConnection {
     const invocationId = this.nextInvocationId();
 
     const stream = (this.subject as WebSocketSubject<IHubInvocationMessage[]>).multiplex(
-      () => [createStreamInvocationMessage(method, args, invocationId)],
-      () => [createCancelInvocationMessage(invocationId)],
+      () => [createStreamInvocationMessage(method, args, invocationId, this.getHeaders(method, args))],
+      () => [createCancelInvocationMessage(invocationId, this.getHeaders(method, args))],
       messages => !!messages.find(x => x.invocationId === invocationId)
     ) as Observable<IHubInvocationMessage[]>;
 
@@ -94,7 +98,9 @@ export class SignalrConnection {
   invoke<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
     const invocationId = this.nextInvocationId();
 
-    (this.subject as WebSocketSubject<IInvocationMessage[]>).next([createInvocationMessage(method, args, invocationId)]);
+    const invocation = createInvocationMessage(method, args, invocationId, this.getHeaders(method, args));
+
+    (this.subject as WebSocketSubject<IInvocationMessage[]>).next([invocation]);
 
     return (this.subject as WebSocketSubject<ICompletionMessage[]>)
       .pipe(
@@ -130,7 +136,7 @@ export class SignalrConnection {
    * @param args The arguments used to invoke the server method.
    */
   send(method: string, ...args: unknown[]): void {
-    this.subject.next([createInvocationMessage(method, args)]);
+    this.subject.next([createInvocationMessage(method, args, undefined, this.getHeaders(method, args))]);
   }
 
   /**
@@ -145,4 +151,7 @@ export class SignalrConnection {
     this.lastInvocationId++;
     return this.lastInvocationId.toString();
   }
+
+  private getHeaders = (method: string, args: unknown[]): IMessageHeaders | undefined =>
+    this.headersFactory ? this.headersFactory(method, args) : undefined;
 }

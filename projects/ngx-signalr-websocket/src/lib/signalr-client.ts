@@ -82,7 +82,7 @@ export class SignalrClient {
       url.searchParams.append('access_token', accessToken);
     }
 
-    return new SignalrConnection(url.href, this.serializer);
+    return new SignalrConnection(url.href, this.serializer, this.options.headersFactory);
   }
 }
 

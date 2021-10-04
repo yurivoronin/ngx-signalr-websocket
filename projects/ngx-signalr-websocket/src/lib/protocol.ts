@@ -172,21 +172,24 @@ export const handshakeRequest: IHandshakeRequest = { protocol: 'json', version: 
 export const pingMessage: IPingMessage = { type: MessageType.ping };
 export const closeMessage: ICloseMessage = { type: MessageType.close };
 
-export const createInvocationMessage = (target: string, args: unknown[], invocationId?: string): IInvocationMessage => ({
+export const createInvocationMessage = (target: string, args: unknown[], invocationId?: string, headers?: IMessageHeaders): IInvocationMessage => ({
   type: MessageType.invocation,
+  headers,
   invocationId,
   target,
   arguments: args
 });
 
-export const createStreamInvocationMessage = (target: string, args: unknown[], invocationId: string): IStreamInvocationMessage => ({
+export const createStreamInvocationMessage = (target: string, args: unknown[], invocationId: string, headers?: IMessageHeaders): IStreamInvocationMessage => ({
   type: MessageType.streamInvocation,
+  headers,
   invocationId,
   target,
   arguments: args,
 });
 
-export const createCancelInvocationMessage = (invocationId: string): ICancelInvocationMessage => ({
+export const createCancelInvocationMessage = (invocationId: string, headers?: IMessageHeaders): ICancelInvocationMessage => ({
   type: MessageType.cancelInvocation,
+  headers,
   invocationId
 });
