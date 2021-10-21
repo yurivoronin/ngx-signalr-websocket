@@ -141,7 +141,7 @@ export class AppSignalrService implements OnDestroy {
   private client: SignalrClient;
   private connection$ = new BehaviorSubject<SignalrConnection | null>(null);
 
-  private readonly readyConnection$ = this.connection$.pipe(filter(connection => !!connection));
+  private readonly readyConnection$ = this.connection$.pipe(filter(connection => !!connection && connection.opened));
 
   constructor(store: Store<fromRoot.State>, httpClient: HttpClient) {
 

@@ -26,6 +26,8 @@ import { MessageType } from './protocol';
  */
 export class SignalrConnection {
 
+  get opened () { return !this.maintenance$.closed; };
+
   private subject: WebSocketSubject<(IHubMessage | IHandshakeRequest)[]>;
   private lastInvocationId = 0;
 
@@ -65,6 +67,8 @@ export class SignalrConnection {
   * @returns
   */
   stream<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
+    this.checkOpened();
+
     const invocationId = this.nextInvocationId();
 
     const stream = (this.subject as WebSocketSubject<IHubInvocationMessage[]>).multiplex(
@@ -96,8 +100,9 @@ export class SignalrConnection {
    * @returns
    */
   invoke<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
-    const invocationId = this.nextInvocationId();
+    this.checkOpened();
 
+    const invocationId = this.nextInvocationId();
     const invocation = createInvocationMessage(method, args, invocationId, this.getHeaders(method, args));
 
     (this.subject as WebSocketSubject<IInvocationMessage[]>).next([invocation]);
@@ -121,6 +126,8 @@ export class SignalrConnection {
    * @returns Invocation's arguments Observable.
    */
   on<TArguments extends Array<unknown>>(method: string): Observable<TArguments> {
+    this.checkOpened();
+
     return (this.subject as WebSocketSubject<IInvocationMessage[]>)
       .pipe(
         mergeAll(),
@@ -136,6 +143,8 @@ export class SignalrConnection {
    * @param args The arguments used to invoke the server method.
    */
   send(method: string, ...args: unknown[]): void {
+    this.checkOpened();
+
     this.subject.next([createInvocationMessage(method, args, undefined, this.getHeaders(method, args))]);
   }
 
@@ -143,8 +152,14 @@ export class SignalrConnection {
    * Closes the connection to hub and terminates subscriptions.
    */
   close(): void {
-    if (this.maintenance$) { this.maintenance$.unsubscribe(); }
+    this.maintenance$?.unsubscribe();
     this.subject.complete();
+  }
+
+  private checkOpened() {
+    if (!this.opened) {
+      throw "Connection not opened";
+    }
   }
 
   private nextInvocationId(): string {
