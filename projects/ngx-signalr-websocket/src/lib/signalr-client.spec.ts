@@ -1,5 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { SignalrClient } from './signalr-client';
@@ -82,9 +83,9 @@ describe('BackofficeBaseService', () => {
   it('call invoke with headers correctly', (done) => {
 
     const client = new SignalrClient(httpClient, {
-      headersFactory: () => ({
+      headersFactory: () => (of({
         "X-Header": "Test"
-      })
+      }))
     });
 
     client.connect(signalrHubUri)

@@ -1,5 +1,5 @@
-import { Observable, Subscription } from 'rxjs';
-import { filter, first, map, mergeAll, takeWhile, tap } from 'rxjs/operators';
+import { Observable, of, Subscription } from 'rxjs';
+import { filter, first, map, mergeAll, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
@@ -26,7 +26,7 @@ import { MessageType } from './protocol';
  */
 export class SignalrConnection {
 
-  get opened () { return !this.maintenance$.closed; };
+  get opened() { return !this.maintenance$.closed; };
 
   private subject: WebSocketSubject<(IHubMessage | IHandshakeRequest)[]>;
   private lastInvocationId = 0;
@@ -42,7 +42,7 @@ export class SignalrConnection {
   constructor(
     url: string,
     private serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>,
-    private headersFactory?: (method: string, args: unknown[]) => IMessageHeaders) {
+    private headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>) {
 
     this.subject = webSocket<(IHubMessage | IHandshakeRequest)[]>({
       url,
@@ -71,11 +71,13 @@ export class SignalrConnection {
 
     const invocationId = this.nextInvocationId();
 
-    const stream = (this.subject as WebSocketSubject<IHubInvocationMessage[]>).multiplex(
-      () => [createStreamInvocationMessage(method, args, invocationId, this.getHeaders(method, args))],
-      () => [createCancelInvocationMessage(invocationId, this.getHeaders(method, args))],
-      messages => !!messages.find(x => x.invocationId === invocationId)
-    ) as Observable<IHubInvocationMessage[]>;
+    const stream = this.getHeaders(method, args)
+      .pipe(switchMap(headers =>
+        (this.subject as WebSocketSubject<IHubInvocationMessage[]>).multiplex(
+          () => [createStreamInvocationMessage(method, args, invocationId, headers)],
+          () => [createCancelInvocationMessage(invocationId, headers)],
+          messages => !!messages.find(x => x.invocationId === invocationId)
+        ) as Observable<IHubInvocationMessage[]>));
 
     return stream.pipe(
       mergeAll(),
@@ -103,9 +105,10 @@ export class SignalrConnection {
     this.checkOpened();
 
     const invocationId = this.nextInvocationId();
-    const invocation = createInvocationMessage(method, args, invocationId, this.getHeaders(method, args));
 
-    (this.subject as WebSocketSubject<IInvocationMessage[]>).next([invocation]);
+    this.getHeaders(method, args)
+      .pipe(map(headers => createInvocationMessage(method, args, invocationId, headers)))
+      .subscribe(invocation => this.subject.next([invocation]));
 
     return (this.subject as WebSocketSubject<ICompletionMessage[]>)
       .pipe(
@@ -145,7 +148,9 @@ export class SignalrConnection {
   send(method: string, ...args: unknown[]): void {
     this.checkOpened();
 
-    this.subject.next([createInvocationMessage(method, args, undefined, this.getHeaders(method, args))]);
+    this.getHeaders(method, args)
+      .pipe(map(headers => createInvocationMessage(method, args, undefined, headers)))
+      .subscribe(invocation => this.subject.next([invocation]));
   }
 
   /**
@@ -167,6 +172,6 @@ export class SignalrConnection {
     return this.lastInvocationId.toString();
   }
 
-  private getHeaders = (method: string, args: unknown[]): IMessageHeaders | undefined =>
-    this.headersFactory ? this.headersFactory(method, args) : undefined;
+  private getHeaders = (method: string, args: unknown[]): Observable<IMessageHeaders | undefined> =>
+    this.headersFactory ? this.headersFactory(method, args).pipe(take(1)) : of(undefined);
 }

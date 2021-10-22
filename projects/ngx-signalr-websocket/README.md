@@ -103,17 +103,17 @@ To end the stream from the client, call the `unsubscribe()` method on the ISubsc
 
 ## Configuration
 
-With the default configuration, the client converts string dates to the Date type.
+With the default configuration, the client converts JSON as is.
 
 If you want to override the configuration, you can use the constructor parameter:
 
 ```typescript
 SignalrClient.create(url, configuration => {
-  confgiuration.propertyParsers = [parseIsoDateStrToDate]; // This is default value.
+  confgiuration.propertyParsers = []; // This is default value.
 })
 ```
 
-If you need specific settings for message parsing, you can add functions `(name: string, value: any) => any` to the `propertyParsers` option. If you don't need a Date conversion, just set `propertyParsers` as an empty array.
+If you need specific settings for message parsing, you can add functions `(name: string, value: any) => any` to the `propertyParsers` option. If you need a Date conversion, just add `parseIsoDateStrToDate` to `propertyParsers`.
 
 
 ## Service example
