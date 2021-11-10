@@ -1,6 +1,6 @@
 {
   "name": "ngx-signalr-websocket",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A lightweight ASP.NET SignalR client for Angular",
   "license": "MIT",
   "keywords": [

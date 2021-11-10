@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 
 import { INegotiateResponse, Transport, TransferFormat } from './negotiate';
 import { IHubMessage, IHandshakeRequest } from './protocol';
-import { IMessageSerializer, TextMessageSerializer, parseIsoDateStrToDate } from './serialization';
+import { IMessageSerializer, TextMessageSerializer } from './serialization';
 import { ISignalrClientOptions } from './signalr-client-options';
 import { SignalrConnection } from './signalr-connection';
 
 const defaultOptions: ISignalrClientOptions = {
-  propertyParsers: [parseIsoDateStrToDate]
+  propertyParsers: []
 };
 
 /**
