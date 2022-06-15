@@ -23,11 +23,11 @@ rxjs            | >= 6.6.0
 
 ## Getting started
 
-1. Install ngx-signalr-websocket `npm i --save ngx-signalr-werbsocket`.
+1. Install ngx-signalr-websocket `npm i --save ngx-signalr-websocket`.
 
 2. Import SignalrClient and connect to SignalR hub:
     ```typescript
-    import { SignalrClient } from 'ngx-signalr-werbsocket';
+    import { SignalrClient } from 'ngx-signalr-websocket';
 
     ...
 
