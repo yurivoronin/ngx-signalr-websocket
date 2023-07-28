@@ -163,7 +163,7 @@ export class SignalrConnection {
 
   private checkOpened() {
     if (!this.opened) {
-      throw "Connection not opened";
+      throw Error("Connection not opened");
     }
   }
 

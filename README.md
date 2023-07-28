@@ -16,7 +16,7 @@ Run `npm run mock:build` to first build mock SignalR hub docker image named 'sig
 
 Run `npm run mock:run` to create and start mock SignalR hub docker container 'signalr-example'.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `npm test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
 When tests finished run `npm run mock:stop` to stop mock SignalR hub docker container 'signalr-example'.
 
