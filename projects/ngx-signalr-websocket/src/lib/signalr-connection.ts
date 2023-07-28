@@ -64,7 +64,7 @@ export class SignalrConnection {
   *
   * @param method The name of the server method to invoke.
   * @param args The arguments used to invoke the server method.
-  * @returns
+  * @returns An Observable that yields results from the server as they are received.
   */
   stream<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
     this.checkOpened();
@@ -99,7 +99,7 @@ export class SignalrConnection {
    *
    * @param method The name of the server method to invoke.
    * @param args The arguments used to invoke the server method.
-   * @returns
+   * @returns An Observable with single result from the server.
    */
   invoke<TItem>(method: string, ...args: unknown[]): Observable<TItem> {
     this.checkOpened();

@@ -36,7 +36,6 @@ export class SignalrClient {
    *
    * @param httpClient HTTP client performs HTTP requests.
    * @param configure Optional: provide action to configure SignalR client options.
-   * @returns
    */
   static create(httpClient: HttpClient, configure?: (options: ISignalrClientOptions) => void) {
     let options = defaultOptions;
