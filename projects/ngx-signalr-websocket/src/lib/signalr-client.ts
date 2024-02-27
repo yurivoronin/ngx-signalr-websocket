@@ -25,7 +25,7 @@ export class SignalrClient {
    * @param httpClient HTTP client performs HTTP requests.
    * @param options Optional: SignalR client options.
    */
-  constructor(private httpClient: HttpClient, options?: ISignalrClientOptions) {
+  constructor(private readonly httpClient: HttpClient, options?: ISignalrClientOptions) {
     this.options = { ...defaultOptions, ...options };
 
     this.serializer = new TextMessageSerializer<IHubMessage | IHandshakeRequest>(this.options.propertyParsers);

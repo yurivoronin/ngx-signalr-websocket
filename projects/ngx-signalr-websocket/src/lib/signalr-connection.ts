@@ -41,8 +41,8 @@ export class SignalrConnection {
    */
   constructor(
     url: string,
-    private serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>,
-    private headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>) {
+    private readonly serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>,
+    private readonly headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>) {
 
     this.subject = webSocket<(IHubMessage | IHandshakeRequest)[]>({
       url,
