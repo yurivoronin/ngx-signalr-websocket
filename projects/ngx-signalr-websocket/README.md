@@ -1,12 +1,13 @@
 # ngx-signalr-websocket
 
-A lightweight Angular RxJS library that allows you to connect to [ASP.NET SignalR](https://docs.microsoft.com/en-us/aspnet/core/signalr/introduction) using WebSocket. It is designed to provide simpler API.
+A lightweight RxJS library that allows you to connect to [ASP.NET SignalR](https://docs.microsoft.com/en-us/aspnet/core/signalr/introduction) using WebSocket. It is designed to provide simpler API.
 
-This is based on the [SignalR specification](https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/docs/specs/HubProtocol.md) and uses the classes built into Angular to communicate with the server. This ensures a small size of the extra code and good tree-shaking support.
+This is based on the [SignalR specification](https://github.com/dotnet/aspnetcore/blob/main/src/SignalR/docs/specs/HubProtocol.md) and uses the classes compatible with Angular. This ensures a small size of the extra code and good tree-shaking support.
 
 ### Features
 
-- Depends only on RxJS and Angular HttpClient
+- Depends only on RxJS
+- Compatible with Angular HttpClient, but this is not necessary
 - Implements the usual reactive API for Angular developers
 - Provides good typing support
 - Allows to configure messages serialization
@@ -17,8 +18,7 @@ This is based on the [SignalR specification](https://github.com/dotnet/aspnetcor
 
 package         | version
 --------------- | ---------
-@angular/common | >= 10.0.0
-rxjs            | >= 6.6.0
+rxjs            | >= 7.0.0
 
 
 ## Getting started

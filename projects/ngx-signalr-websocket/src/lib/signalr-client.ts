@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -7,6 +6,7 @@ import { IHubMessage, IHandshakeRequest } from './protocol';
 import { IMessageSerializer, TextMessageSerializer } from './serialization';
 import { ISignalrClientOptions } from './signalr-client-options';
 import { SignalrConnection } from './signalr-connection';
+import { IHttpPostClient } from './http-post-client';
 
 const defaultOptions: ISignalrClientOptions = {
   propertyParsers: []
@@ -25,7 +25,7 @@ export class SignalrClient {
    * @param httpClient HTTP client performs HTTP requests.
    * @param options Optional: SignalR client options.
    */
-  constructor(private readonly httpClient: HttpClient, options?: ISignalrClientOptions) {
+  constructor(private readonly httpClient: IHttpPostClient, options?: ISignalrClientOptions) {
     this.options = { ...defaultOptions, ...options };
 
     this.serializer = new TextMessageSerializer<IHubMessage | IHandshakeRequest>(this.options.propertyParsers);
@@ -37,7 +37,7 @@ export class SignalrClient {
    * @param httpClient HTTP client performs HTTP requests.
    * @param configure Optional: provide action to configure SignalR client options.
    */
-  static create(httpClient: HttpClient, configure?: (options: ISignalrClientOptions) => void) {
+  static create(httpClient: IHttpPostClient, configure?: (options: ISignalrClientOptions) => void) {
     let options = defaultOptions;
 
     if (configure) { configure(options); }
