@@ -9,12 +9,12 @@ export enum TransferFormat {
   text = 'Text',
 }
 
-export interface INegotiateResponse {
-  connectionId: string;
-  availableTransports: IAvailableTransport[];
-}
-
 interface IAvailableTransport {
   transport: Transport;
   transferFormats: string[];
+}
+
+export interface INegotiateResponse {
+  connectionId: string;
+  availableTransports: IAvailableTransport[];
 }
