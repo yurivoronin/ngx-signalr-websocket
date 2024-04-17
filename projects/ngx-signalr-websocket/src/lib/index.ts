@@ -1,3 +1,4 @@
-export { ISignalrClientOptions } from './signalr-client-options';
-export { SignalrClient } from './signalr-client';
-export { SignalrConnection } from './signalr-connection';
+export * from './http-post-client';
+export * from './signalr-client-options';
+export * from './signalr-client';
+export * from './signalr-connection';
