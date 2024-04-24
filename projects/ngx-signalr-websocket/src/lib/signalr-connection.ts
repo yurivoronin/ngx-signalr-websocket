@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, merge, Observable, of, Subject, Subscription } from 'rxjs';
 import { filter, first, map, mergeAll, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
@@ -21,6 +21,12 @@ import {
 import { IMessageSerializer } from './serialization';
 import { MessageType } from './protocol';
 
+export enum SignalrConnectionState {
+  closed,
+  opened,
+  closing
+}
+
 /**
  * Represents a connection to a SignalR Hub.
  */
@@ -28,7 +34,13 @@ export class SignalrConnection {
 
   get opened() { return !this.$maintenance.closed; };
 
-  get state() { return }
+  get state() {
+    return merge(
+      this.open$.pipe(map(() => SignalrConnectionState.opened)),
+      this.close$.pipe(map(() => SignalrConnectionState.closed)),
+      this.closing$.pipe(map(() => SignalrConnectionState.closing))
+    );
+  }
 
   private subject: WebSocketSubject<(IHubMessage | IHandshakeRequest)[]>;
   private lastInvocationId = 0;
