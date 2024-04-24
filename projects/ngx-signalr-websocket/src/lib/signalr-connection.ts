@@ -1,4 +1,4 @@
-import { Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { filter, first, map, mergeAll, switchMap, take, takeWhile, tap } from 'rxjs/operators';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
@@ -26,12 +26,17 @@ import { MessageType } from './protocol';
  */
 export class SignalrConnection {
 
-  get opened() { return !this.maintenance$.closed; };
+  get opened() { return !this.$maintenance.closed; };
+
+  get state() { return }
 
   private subject: WebSocketSubject<(IHubMessage | IHandshakeRequest)[]>;
   private lastInvocationId = 0;
 
-  private maintenance$: Subscription;
+  private readonly open$ = new Subject<Event>();
+  private readonly close$ = new Subject<Event>();
+  private readonly closing$ = new Subject<void>();
+  private $maintenance: Subscription;
 
   /**
    * Creates new SignalR hub connection.
@@ -48,9 +53,12 @@ export class SignalrConnection {
       url,
       serializer: value => this.serializer.serialize(value),
       deserializer: event => this.serializer.deserialize(event),
+      openObserver: this.open$,
+      closeObserver: this.close$,
+      closingObserver: this.closing$
     });
 
-    this.maintenance$ = (this.subject as WebSocketSubject<IPingMessage[]>)
+    this.$maintenance = (this.subject as WebSocketSubject<IPingMessage[]>)
       .multiplex(
         () => [handshakeRequest],
         () => [closeMessage],
@@ -157,7 +165,7 @@ export class SignalrConnection {
    * Closes the connection to hub and terminates subscriptions.
    */
   close(): void {
-    this.maintenance$?.unsubscribe();
+    this.$maintenance?.unsubscribe();
     this.subject.complete();
   }
 
