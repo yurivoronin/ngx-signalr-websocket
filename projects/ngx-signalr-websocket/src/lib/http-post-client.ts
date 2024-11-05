@@ -19,7 +19,7 @@ export interface IHttpPostClient {
 
 export class DefaultHttpPostClient implements IHttpPostClient {
   post<T>(url: string, body: any): Observable<T> {
-    return fromFetch(url, { body, selector: response => response.json() });
+    return fromFetch(url, { method: 'POST', body, selector: response => response.json() });
   }
 }
 

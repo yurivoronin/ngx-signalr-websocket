@@ -53,12 +53,18 @@ export class SignalrClient {
    * @returns SignalR hub connection.
    */
   connect(hubUrl: string, accessToken?: string): Observable<SignalrConnection> {
-    return this.negotiate(hubUrl)
+    return this.negotiate(hubUrl, accessToken)
       .pipe(map(connectionId => this.createConnection(hubUrl, connectionId, accessToken)));
   }
 
-  private negotiate(endpointBase: string): Observable<string> {
-    return this.httpClient.post<INegotiateResponse>(`${endpointBase}/negotiate`, null)
+  private negotiate(endpointBase: string, accessToken?: string): Observable<string> {
+    const url = new URL(`${endpointBase.replace(/\/$/, '')}/negotiate`, window.location.href);
+
+    if (accessToken) {
+      url.searchParams.append('access_token', accessToken);
+    }
+
+    return this.httpClient.post<INegotiateResponse>(url.href, null)
       .pipe(
         map(response => {
           if (!response.availableTransports
