@@ -126,8 +126,7 @@ It uses [NgRx](https://ngrx.io/) to provide SignalR Hub URL. In general, this is
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { filter, switchMap, withLatestFrom, map } from 'rxjs/operators';
+import { BehaviorSubject, filter, map, Observable, switchMap, withLatestFrom } from 'rxjs';
 import { SignalrClient, SignalrConnection } from 'ngx-signalr-websocket';
 import * as fromRoot from '@app/store/reducers';
 

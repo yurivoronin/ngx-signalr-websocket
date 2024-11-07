@@ -1,5 +1,4 @@
-import { BehaviorSubject, merge, Observable, of, Subject, Subscription } from 'rxjs';
-import { filter, first, map, mergeAll, switchMap, take, takeWhile, tap } from 'rxjs/operators';
+import { debounceTime, filter, first, map, merge, mergeAll, Observable, of, Subject, Subscription, switchMap, take, takeWhile, tap } from 'rxjs';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 
 import {
@@ -16,10 +15,10 @@ import {
   IMessageHeaders,
   IPingMessage,
   IStreamItemMessage,
+  MessageType,
   pingMessage
 } from './protocol';
 import { IMessageSerializer } from './serialization';
-import { MessageType } from './protocol';
 
 export enum SignalrConnectionState {
   closed,
@@ -31,6 +30,8 @@ export enum SignalrConnectionState {
  * Represents a connection to a SignalR Hub.
  */
 export class SignalrConnection {
+
+  timeout = 30_000;
 
   get opened() { return !this.$maintenance.closed; };
 
@@ -49,6 +50,7 @@ export class SignalrConnection {
   private readonly close$ = new Subject<Event>();
   private readonly closing$ = new Subject<void>();
   private $maintenance: Subscription;
+  private $timeout: Subscription;
 
   /**
    * Creates new SignalR hub connection.
@@ -76,6 +78,8 @@ export class SignalrConnection {
         () => [closeMessage],
         (messages: IPingMessage[]) => messages.some(({ type }) => type === MessageType.ping))
       .subscribe(_ => this.subject.next([pingMessage]));
+
+    this.$timeout = this.subject.pipe(debounceTime(this.timeout)).subscribe(() => this.close());
   }
 
   /**
@@ -177,6 +181,7 @@ export class SignalrConnection {
    * Closes the connection to hub and terminates subscriptions.
    */
   close(): void {
+    this.$timeout?.unsubscribe();
     this.$maintenance?.unsubscribe();
     this.subject.complete();
   }

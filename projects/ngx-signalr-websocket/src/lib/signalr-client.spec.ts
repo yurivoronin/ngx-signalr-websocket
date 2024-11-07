@@ -1,7 +1,6 @@
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, of, switchMap } from 'rxjs';
 
 import { SignalrClient } from './signalr-client';
 

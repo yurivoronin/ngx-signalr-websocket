@@ -1,12 +1,11 @@
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, Observable } from 'rxjs';
 
-import { INegotiateResponse, Transport, TransferFormat } from './negotiate';
-import { IHubMessage, IHandshakeRequest } from './protocol';
+import { IHttpPostClient } from './http-post-client';
+import { INegotiateResponse, TransferFormat, Transport } from './negotiate';
+import { IHandshakeRequest, IHubMessage } from './protocol';
 import { IMessageSerializer, TextMessageSerializer } from './serialization';
 import { ISignalrClientOptions } from './signalr-client-options';
 import { SignalrConnection } from './signalr-connection';
-import { IHttpPostClient } from './http-post-client';
 
 const defaultOptions: ISignalrClientOptions = {
   propertyParsers: []
