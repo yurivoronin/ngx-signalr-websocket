@@ -136,9 +136,8 @@ export class SignalrConnection {
 
     return (this.subject as WebSocketSubject<ICompletionMessage[]>)
       .pipe(
-        mergeAll(),
-        filter(x => x.invocationId === invocationId),
-        first(),
+        mergeAll(1),
+        first(x => x.invocationId === invocationId),
         map(message => {
           const { error, result } = message as ICompletionMessage;
           if (error) { throw Error(error); }
