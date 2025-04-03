@@ -33,6 +33,7 @@ rxjs            | >= 7.0.0
 
     const client = SignalrClient.create(httpClient);
     // constructor is also available: new SignalrClient(httpClient);
+    // you can use both Angular HttpClient and DefaultHttpPostClient from this lib;
     
     const connection = client.connect(signalrHubUri);
     ```
@@ -103,15 +104,19 @@ To end the stream from the client, call the `unsubscribe()` method on the ISubsc
 
 ## Configuration
 
-With the default configuration, the client converts JSON as is.
-
 If you want to override the configuration, you can use the constructor parameter:
 
 ```typescript
-SignalrClient.create(url, configuration => {
-  confgiuration.propertyParsers = []; // This is default value.
+SignalrClient.create(httpClient, options => {
+  options.headersFactory = (_method: string, _arg: unknown[]) =>
+    of({
+      ['Authorization']: 'Bearer ...',
+    });
+  options.propertyParsers = [parseIsoDateStrToDate]
 })
 ```
+
+If you need extra headers for SignalR negotiate request, use `headersFactory` option.
 
 If you need specific settings for message parsing, you can add functions `(name: string, value: any) => any` to the `propertyParsers` option. If you need a Date conversion, just add `parseIsoDateStrToDate` to `propertyParsers`.
 
