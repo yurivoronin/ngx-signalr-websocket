@@ -110,13 +110,13 @@ If you want to override the configuration, you can use the constructor parameter
 SignalrClient.create(httpClient, options => {
   options.headersFactory = (_method: string, _arg: unknown[]) =>
     of({
-      ['Authorization']: 'Bearer ...',
+      ['User']: '101',
     });
   options.propertyParsers = [parseIsoDateStrToDate]
 })
 ```
 
-If you need extra headers for SignalR negotiate request, use `headersFactory` option.
+If you need extra headers for SignalR methods call, use `headersFactory` option.
 
 If you need specific settings for message parsing, you can add functions `(name: string, value: any) => any` to the `propertyParsers` option. If you need a Date conversion, just add `parseIsoDateStrToDate` to `propertyParsers`.
 
