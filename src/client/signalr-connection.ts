@@ -17,8 +17,8 @@ import {
   IStreamItemMessage,
   MessageType,
   pingMessage
-} from './protocol';
-import { IMessageSerializer } from './serialization';
+} from 'common/protocol';
+import { IMessageSerializer } from 'common/serialization';
 
 export enum SignalrConnectionState {
   closed,

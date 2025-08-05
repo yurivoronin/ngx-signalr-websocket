@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 
-import { IMessageHeaders } from './protocol';
-import { JsonProperyParser } from './serialization/json-propery-parser';
+import { IMessageHeaders } from 'common/protocol';
+import { JsonProperyParser } from 'common/serialization';
 
 export interface ISignalrClientOptions {
   headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>;

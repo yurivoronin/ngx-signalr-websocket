@@ -1,9 +1,9 @@
 import { map, Observable } from 'rxjs';
 
+import { IHandshakeRequest, IHubMessage } from 'common/protocol';
+import { IMessageSerializer, TextMessageSerializer } from 'common/serialization';
 import { IHttpPostClient } from './http-post-client';
 import { INegotiateResponse, TransferFormat, Transport } from './negotiate';
-import { IHandshakeRequest, IHubMessage } from './protocol';
-import { IMessageSerializer, TextMessageSerializer } from './serialization';
 import { ISignalrClientOptions } from './signalr-client-options';
 import { SignalrConnection } from './signalr-connection';
 

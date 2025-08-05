@@ -1,21 +1,34 @@
-import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { TestBed } from '@angular/core/testing';
-import { map, of, switchMap } from 'rxjs';
+import { from, map, Observable, of, switchMap } from 'rxjs';
+import fetch from 'node-fetch';
 
+import { IHttpPostClient } from './http-post-client';
 import { SignalrClient } from './signalr-client';
 
 const signalrHubUri = 'http://localhost:5050/hub';
 
+class TestHttpPostClient implements IHttpPostClient {
+  post<T>(url: string, body: any): Observable<T> {
+
+    const request = fetch(url, { method: 'POST', body}).then(response => {
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
+
+        return response.json() as Promise<T>;
+      }
+    )
+
+    return from(request);
+  }
+}
+
 describe('BackofficeBaseService', () => {
-  let httpClient: HttpClient;
+  let httpClient: IHttpPostClient;
   let client: SignalrClient;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-    imports: [],
-    providers: [provideHttpClient(withInterceptorsFromDi())]
-});
-    httpClient = TestBed.inject(HttpClient);
+
+    httpClient = new TestHttpPostClient();
     client = new SignalrClient(httpClient);
   });
 

@@ -2,21 +2,21 @@
 
 # compiled output
 /dist
-/tmp
-/out-tsc
 bin/
 obj/
-# Only exists if Bazel was run
-/bazel-out
 
 # dependencies
 /node_modules
+npm-debug.log
+yarn-error.log
 
 # profiling files
 chrome-profiler-events*.json
+speed-measure-plugin*.json
 
 # IDEs and editors
-/.idea
+.idea/
+.vs/
 .project
 .classpath
 .c9/
@@ -32,18 +32,11 @@ chrome-profiler-events*.json
 !.vscode/extensions.json
 .history/*
 
-# misc
-/.angular/cache
-/.sass-cache
-/connect.lock
+# Miscellaneous
+.parcel-cache/
 /coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
+.eslintcache
 
 # System Files
 .DS_Store
 Thumbs.db
-package.json
