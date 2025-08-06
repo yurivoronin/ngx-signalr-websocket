@@ -1,5 +1,5 @@
-ARG BUILDER_IMG=mcr.microsoft.com/dotnet/sdk:5.0
-ARG BASE_IMG=mcr.microsoft.com/dotnet/aspnet:5.0
+ARG BUILDER_IMG=mcr.microsoft.com/dotnet/sdk:9.0
+ARG BASE_IMG=mcr.microsoft.com/dotnet/runtime:9.0
 
 
 FROM ${BUILDER_IMG} AS builder
@@ -12,10 +12,14 @@ RUN dotnet publish \
         --output /app/publish \
         --configuration Release \
         --runtime linux-x64 \
+        --self-contained true \
         /app/SignalR.Example.csproj
 
 
 FROM ${BASE_IMG}
+
+RUN ln -fs /usr/share/zoneinfo/Europe/Moscow /etc/localtime \
+ && dpkg-reconfigure --frontend noninteractive tzdata
 
 WORKDIR /app
 

@@ -30,9 +30,10 @@
     "build": "parcel build",
     "test": "jest",
     "mock:build": "cd ./mock/SignalR.Example && docker build --tag signalr-example .",
-    "mock:run": "docker run -d -p 5050:80 --name signalr-example signalr-example",
+    "mock:run": "docker run -d -p 8080:8080 --name signalr-example signalr-example",
     "mock:start": "docker start signalr-example",
     "mock:stop": "docker stop signalr-example",
+    "mock:rm": "docker rm signalr-example",
     "mock:clear": "docker rm signalr-example && docker image rm signalr-example"
   },
   "dependencies": {

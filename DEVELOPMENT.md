@@ -22,4 +22,6 @@ When tests finished run `npm run mock:stop` to stop mock SignalR hub docker cont
 
 To rerun mock container use `npm run mock:start`.
 
+In case of remove 'signalr-example' run `npm run mock:rm` to remove container.
+
 In case of rebuild or remove 'signalr-example' run `npm run mock:clear` to remove both container and image.

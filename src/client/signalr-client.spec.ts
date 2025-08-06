@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import { IHttpPostClient } from './http-post-client';
 import { SignalrClient } from './signalr-client';
 
-const signalrHubUri = 'http://localhost:5050/hub';
+const signalrHubUri = 'http://localhost:8080/hub';
 
 class TestHttpPostClient implements IHttpPostClient {
   post<T>(url: string, body: any): Observable<T> {

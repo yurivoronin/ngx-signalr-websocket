@@ -4,29 +4,29 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace SignalR.Example
 {
-  public class AppHub : Hub
-  {
-    public int Add(int x, int y)
+    public class AppHub : Hub
     {
-      return x + y;
-    }
-
-    public async IAsyncEnumerable<int> Enumerate(int count, int? delayMilliseconds = default)
-    {
-      for (int i = 0; i < count; i++)
-      {
-        if (delayMilliseconds.HasValue)
+        public int Add(int x, int y)
         {
-          await Task.Delay(delayMilliseconds.Value);
+            return x + y;
         }
 
-        yield return i;
-      }
-    }
+        public async IAsyncEnumerable<int> Enumerate(int count, int? delayMilliseconds = default)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                if (delayMilliseconds.HasValue)
+                {
+                    await Task.Delay(delayMilliseconds.Value);
+                }
 
-    public async Task Repeat(int value)
-    {
-      await Clients.Caller.SendAsync("Receive", value);
+                yield return i;
+            }
+        }
+
+        public async Task Repeat(int value)
+        {
+            await Clients.Caller.SendAsync("Receive", value);
+        }
     }
-  }
 }
