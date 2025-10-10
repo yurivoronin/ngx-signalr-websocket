@@ -6,4 +6,5 @@ import { JsonProperyParser } from 'common/serialization';
 export interface ISignalrClientOptions {
   headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>;
   propertyParsers?: JsonProperyParser[];
+  timeout?: number;
 }

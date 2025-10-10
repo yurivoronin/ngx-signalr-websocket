@@ -31,11 +31,9 @@ export enum SignalrConnectionState {
  */
 export class SignalrConnection {
 
-  timeout = 30_000;
+  get opened(): boolean { return !this.$maintenance.closed; };
 
-  get opened() { return !this.$maintenance.closed; };
-
-  get state() {
+  get state(): Observable<SignalrConnectionState> {
     return merge(
       this.open$.pipe(map(() => SignalrConnectionState.opened)),
       this.close$.pipe(map(() => SignalrConnectionState.closed)),
@@ -61,7 +59,8 @@ export class SignalrConnection {
   constructor(
     url: string,
     private readonly serializer: IMessageSerializer<IHubMessage | IHandshakeRequest>,
-    private readonly headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>) {
+    private readonly headersFactory?: (method: string, args: unknown[]) => Observable<IMessageHeaders>,
+    private readonly timeout: number = 30_000) {
 
     this.subject = webSocket<(IHubMessage | IHandshakeRequest)[]>({
       url,
@@ -79,7 +78,10 @@ export class SignalrConnection {
         (messages: IPingMessage[]) => messages.some(({ type }) => type === MessageType.ping))
       .subscribe(_ => this.subject.next([pingMessage]));
 
-    this.$timeout = this.subject.pipe(debounceTime(this.timeout)).subscribe(() => this.close());
+    this.$timeout = this.subject.pipe(debounceTime(this.timeout)).subscribe(() => {
+      this.stop();
+      this.subject.error({ code: 4504, reason: 'Timeout expired' });
+    });
   }
 
   /**
@@ -180,14 +182,18 @@ export class SignalrConnection {
    * Closes the connection to hub and terminates subscriptions.
    */
   close(): void {
+    this.stop();
+    this.subject.complete();
+  }
+
+  private stop(): void {
     this.$timeout?.unsubscribe();
     this.$maintenance?.unsubscribe();
-    this.subject.complete();
   }
 
   private checkOpened() {
     if (!this.opened) {
-      throw Error("Connection not opened");
+      throw new Error('Connection not opened');
     }
   }
 
